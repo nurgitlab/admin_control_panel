@@ -1,0 +1,58 @@
+use crate::{
+    configs::config, handlers::ping_pong_handler::get_ping_pong,
+    migrations::apply_migrations::apply_migrations,
+};
+use actix_web::{App, HttpServer, middleware::Logger, web::Data};
+use sqlx::postgres::PgPoolOptions;
+
+mod configs;
+mod errors;
+mod handlers;
+mod middlewares;
+mod migrations;
+mod models;
+mod repositories;
+mod services;
+
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    unsafe {
+        std::env::set_var("RUST_LOG", "debug");
+        std::env::set_var("BACKTRACE", "1");
+    }
+    env_logger::init();
+
+    dotenv::dotenv().ok();
+
+    config::Config::init().expect("Failed to initialize config");
+
+    // Create DB pool
+    let database_url = configs::Config::global().database_url.clone();
+    println!("database_url: {database_url}");
+
+    let pool = PgPoolOptions::new()
+        .max_connections(5)
+        .connect(&database_url)
+        .await
+        .expect("Failed to create pool");
+
+    apply_migrations(&pool).await.expect("Failed to apply migrations");
+
+    let server_host: String = configs::Config::global().server_host.clone();
+    let server_port = configs::Config::global().server_port.clone();
+
+    HttpServer::new(move || {
+        let logger = Logger::default();
+        App::new()
+            .wrap(logger)
+            .app_data(Data::new(pool.clone()))
+            .service(get_ping_pong)
+            .configure(handlers::users_handler::users_routes)
+            .configure(handlers::cookies_handler::cookie_routes)
+            .configure(handlers::posts_handler::posts_routes)
+            .configure(handlers::auth_handler::auth_routes)
+    })
+    .bind((server_host, server_port))?
+    .run()
+    .await
+}
