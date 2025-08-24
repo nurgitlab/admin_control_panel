@@ -1,6 +1,7 @@
+use dotenv::dotenv;
 use serde::Deserialize;
-use std::{env, sync::Arc};
 use std::sync::OnceLock;
+use std::{env, sync::Arc};
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct Config {
@@ -10,7 +11,7 @@ pub struct Config {
     pub jwt_access_secret: String,
     pub jwt_access_expires: i64,
     pub jwt_refresh_expires: i64,
-    
+
     pub email_host: String,
     pub email_user: String,
     pub email_password: String,
@@ -22,6 +23,8 @@ static CONFIG: OnceLock<Arc<Config>> = OnceLock::new();
 
 impl Config {
     pub fn init() -> Result<(), Box<dyn std::error::Error>> {
+        dotenv().expect("Failed to load .env file");
+
         let config = Config {
             database_url: env::var("DATABASE_URL")?,
             server_port: env::var("SERVER_PORT")
