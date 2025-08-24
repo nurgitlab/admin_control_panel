@@ -1,4 +1,3 @@
-use dotenv::dotenv;
 use serde::Deserialize;
 use std::{env, sync::Arc};
 use std::sync::OnceLock;
@@ -23,8 +22,6 @@ static CONFIG: OnceLock<Arc<Config>> = OnceLock::new();
 
 impl Config {
     pub fn init() -> Result<(), Box<dyn std::error::Error>> {
-        dotenv().ok();
-
         let config = Config {
             database_url: env::var("DATABASE_URL")?,
             server_port: env::var("SERVER_PORT")
