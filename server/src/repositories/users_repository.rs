@@ -2,7 +2,6 @@ use crate::{
     errors::users_errors::UserError,
     models::users_models::{CreateUser, UpdateUser, User},
 };
-use anyhow::Result;
 use sqlx::PgPool;
 
 pub struct UserRepository;

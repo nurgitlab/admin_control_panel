@@ -1,7 +1,7 @@
 use dotenv::dotenv;
-use once_cell::sync::OnceCell;
 use serde::Deserialize;
 use std::{env, sync::Arc};
+use std::sync::OnceLock;
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct Config {
@@ -11,12 +11,16 @@ pub struct Config {
     pub jwt_access_secret: String,
     pub jwt_access_expires: i64,
     pub jwt_refresh_expires: i64,
+    
+    pub email_host: String,
+    pub email_user: String,
+    pub email_password: String,
+    pub email_port: u16,
+    pub email_from: String,
 }
 
-// DATABASE_URL=postgres://postgres:@localhost:5432/postgres
-static CONFIG: OnceCell<Arc<Config>> = OnceCell::new();
+static CONFIG: OnceLock<Arc<Config>> = OnceLock::new();
 
-// JWT_SECRET=mykey
 impl Config {
     pub fn init() -> Result<(), Box<dyn std::error::Error>> {
         dotenv().ok();
@@ -35,6 +39,13 @@ impl Config {
             jwt_refresh_expires: env::var("JWT_REFRESH_EXPIRES")
                 .unwrap_or("3600".to_string())
                 .parse()?,
+            email_host: env::var("EMAIL_HOST")?,
+            email_user: env::var("EMAIL_USER")?,
+            email_password: env::var("EMAIL_PASSWORD")?,
+            email_port: env::var("EMAIL_PORT")
+                .unwrap_or("465".to_string())
+                .parse()?,
+            email_from: env::var("EMAIL_FROM")?,
         };
 
         CONFIG

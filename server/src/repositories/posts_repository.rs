@@ -2,7 +2,6 @@ use crate::{
     errors::posts_errors::PostError,
     models::posts_models::{CreatePost, Post, UpdatePost},
 };
-use anyhow::Result;
 use sqlx::PgPool;
 
 pub struct PostsRepository;
