@@ -65,7 +65,6 @@ impl LettreEmailService {
         Ok(Self { transporter })
     }
 
-    // Validate emails
     fn validate_email_address(address: &str) -> Result<(), EmailError> {
         if address.is_empty() {
             return Err(EmailError::EmailValidation(
@@ -94,7 +93,7 @@ impl EmailService for LettreEmailService {
         html_body: Option<&str>,
     ) -> Result<(), EmailError> {
         let email_from = configs::Config::global().email_from.clone();
-        // Validate incoming parameters
+
         Self::validate_email_address(to)?;
         Self::validate_email_address(&email_from)?;
 
@@ -108,23 +107,19 @@ impl EmailService for LettreEmailService {
             return Err(EmailError::EmptyBody);
         }
 
-        // Build mail message
         let email = {
             let mut builder = MessageBuilder::new();
 
-            // Обработка поля 'from' с детальной ошибкой
             let from_address =
                 email_from.parse().map_err(EmailError::AddressParse)?;
             builder = builder.from(from_address);
 
-            // Обработка поля 'to'
             let to_address = to.parse().map_err(EmailError::AddressParse)?;
             builder = builder.to(to_address);
 
-            // Обработка поля 'subject'
             builder = builder.subject(subject);
 
-            // Построение тела письма
+            //Body of message building
             if let Some(html) = html_body {
                 builder.multipart(
                     MultiPart::alternative()
@@ -147,7 +142,6 @@ impl EmailService for LettreEmailService {
             }
         };
 
-        // Send email
         self.transporter.send(email).await.map_err(EmailError::Smtp)?;
 
         log::info!("Email successfully sent to {}", to);
