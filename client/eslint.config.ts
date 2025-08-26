@@ -78,7 +78,10 @@ export default [
       // Кастомные React правила
       'react/function-component-definition': [
         'error',
-        { namedComponents: 'function-declaration', unnamedComponents: 'arrow-function' },
+        {
+          namedComponents: 'arrow-function',
+          unnamedComponents: 'arrow-function',
+        },
       ],
       'react-hooks/exhaustive-deps': 'error',
       

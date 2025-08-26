@@ -11,7 +11,6 @@ createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <div>
         <Header />
-
         <main>
           <Routes>
             <Route path="/" element={<HomePage />} />
