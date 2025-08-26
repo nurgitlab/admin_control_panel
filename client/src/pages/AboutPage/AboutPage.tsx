@@ -6,11 +6,12 @@ export const AboutPage = () => {
       <ul>
         <li>React 19</li>
         <li>Vite</li>
+
         <li>FSD Architecture</li>
         <li>TypeScript</li>
         <li>React Router</li>
         <li>Zustand</li>
       </ul>
     </div>
-  )
-}
+  );
+};
