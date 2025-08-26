@@ -1,9 +1,10 @@
-import { Routes, Route, BrowserRouter } from 'react-router-dom';
-import { HomePage } from '@/pages/HomePage';
-import { Header } from '@/widgets/header';
-import { AboutPage } from '@/pages/AboutPage';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+
+import { AboutPage } from '@/pages/AboutPage';
+import { HomePage } from '@/pages/HomePage';
+import { Header } from '@/widgets/header';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
