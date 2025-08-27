@@ -6,7 +6,11 @@ use crate::{
     migrations::apply_migrations::apply_migrations,
     services::email_services::{EmailService, LettreEmailService},
 };
-use actix_web::{App, HttpServer, middleware::Logger, web::Data};
+use actix_web::{
+    App, HttpServer,
+    middleware::Logger,
+    web::{Data, scope},
+};
 use sqlx::postgres::PgPoolOptions;
 
 mod configs;
@@ -62,12 +66,15 @@ async fn main() -> std::io::Result<()> {
             .wrap(logger)
             .app_data(Data::new(pool.clone()))
             .app_data(Data::from(Arc::clone(&email_service1)))
-            .service(get_ping_pong)
-            .configure(handlers::users_handler::users_routes)
-            .configure(handlers::cookies_handler::cookie_routes)
-            .configure(handlers::posts_handler::posts_routes)
-            .configure(handlers::auth_handler::auth_routes)
-            .configure(handlers::email_handlers::email_routes)
+            .service(
+                scope("/api")
+                    .service(get_ping_pong)
+                    .configure(handlers::users_handler::users_routes)
+                    .configure(handlers::cookies_handler::cookie_routes)
+                    .configure(handlers::posts_handler::posts_routes)
+                    .configure(handlers::auth_handler::auth_routes)
+                    .configure(handlers::email_handlers::email_routes),
+            )
     })
     .bind((server_host, server_port))?
     .run()
