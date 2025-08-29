@@ -8,6 +8,7 @@ pub struct User {
     pub id: i32,
     pub username: String,
     pub password: String,
+    // pub email: String,
 }
 
 #[derive(Debug, Deserialize, Validate, Display)]
@@ -22,6 +23,8 @@ pub struct CreateUser {
 
     #[validate(length(min = 8))]
     pub password: String,
+    // #[validate(email(message = "Email must be a valid email address"))]
+    // pub email: String,
 }
 
 #[derive(Debug, Deserialize, Validate, Display)]
@@ -36,6 +39,8 @@ pub struct UpdateUser {
 
     #[validate(length(min = 8))]
     pub password: String,
+    // #[validate(email(message = "Email must be a valid email address"))]
+    // pub email: String,
 }
 
 #[derive(Debug, Deserialize, Validate)]

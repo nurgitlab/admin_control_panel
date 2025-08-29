@@ -3,12 +3,20 @@ name = "actix_jwt_auth"
 version = "0.1.0"
 edition = "2024"
 
+[[bin]]
+name = "apply-migrations"
+path = "migrations/src/apply_migrations.rs"
+
+[[bin]]
+name = "main"
+path = "src/main.rs"
+
 [dependencies]
 actix-web = "4"
 actix-web-httpauth = "0.8.0"
-uuid = {version = "1.18.0", features = ["v4", "serde"]}
-serde = {version = "1", features = ["derive"]}
-serde_json = { version = "1.0.143"}
+uuid = { version = "1.18.0", features = ["v4", "serde"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1.0.143" }
 async-trait = "0.1"
 dotenv = "0.15"
 
@@ -16,24 +24,29 @@ env_logger = "0.11.8"
 log = "0.4"
 
 strum_macros = "0.27.2"
-strum = {version = "0.27.2", features = ["derive"]}
+strum = { version = "0.27.2", features = ["derive"] }
 derive_more = "2.0.1"
 
-sqlx = { version = "0.8.0", features = ["postgres", "runtime-tokio-native-tls", "time"] }
+sqlx = { version = "0.8.0", features = [
+    "postgres",
+    "runtime-tokio-native-tls",
+    "time",
+] }
 tokio = { version = "1.0", features = ["full"] }
 
 validator = { version = "0.20.0", features = ["derive"] }
-thiserror = { version = "2.0.16"}
+thiserror = { version = "2.0.16" }
 time = { version = "0.3", features = ["serde", "parsing", "formatting"] }
 
-jsonwebtoken = { version = "9.3.1"}
+jsonwebtoken = { version = "9.3.1" }
 
 # For sending emails
 lettre = { version = "0.11", features = ["tokio1-native-tls", "builder"] }
 lettre_email = "0.9.4"
 mime = "0.3"
 
+configs = { path = "../configs" }
 
 [lints]
 clippy.all = "warn"
-clippy.pedantic = "warn" 
+clippy.pedantic = "warn"

@@ -1,18 +1,32 @@
-use sqlx::PgPool;
+use sqlx::postgres::PgPoolOptions;
 use std::error::Error;
 use std::fs;
 use std::path::Path;
 
-pub async fn apply_migrations(pool: &PgPool) -> Result<(), Box<dyn Error>> {
+use crate::configs::config;
+
+#[tokio::main]
+pub async fn main() -> Result<(), Box<dyn Error>> {
+    config::Config::init().expect("Failed to initialize config");
+
+    // Create DB pool
+    let database_url = config::Config::global().database_url.clone();
+
+    let pool = PgPoolOptions::new()
+        .max_connections(5)
+        .connect(&database_url)
+        .await
+        .expect("Failed to create pool");
+
     sqlx::query(
         "CREATE TABLE IF NOT EXISTS schema_migrations (version BIGINT PRIMARY KEY, applied_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP);")
-        .execute(pool)
+        .execute(&pool)
         .await?;
 
     let applied_migrations: Vec<i64> = sqlx::query_scalar(
         "SELECT version FROM schema_migrations ORDER BY version;",
     )
-    .fetch_all(pool)
+    .fetch_all(&pool)
     .await?;
 
     println!("Applied migrations: {applied_migrations:?}");

@@ -3,7 +3,6 @@ use std::sync::Arc;
 use crate::{
     configs::config,
     handlers::ping_pong_handler::get_ping_pong,
-    migrations::apply_migrations::apply_migrations,
     services::email_services::{EmailService, LettreEmailService},
 };
 use actix_web::{
@@ -13,11 +12,10 @@ use actix_web::{
 };
 use sqlx::postgres::PgPoolOptions;
 
-mod configs;
 mod errors;
 mod handlers;
 mod middlewares;
-mod migrations;
+pub mod migrations;
 mod models;
 mod repositories;
 mod services;
@@ -44,7 +42,7 @@ async fn main() -> std::io::Result<()> {
         .await
         .expect("Failed to create pool");
 
-    apply_migrations(&pool).await.expect("Failed to apply migrations");
+    // apply_migrations(&pool).await.expect("Failed to apply migrations");
 
     // Create email service
     let email_service = LettreEmailService::new().map_err(|e| {
