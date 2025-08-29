@@ -72,32 +72,61 @@ pub async fn main() -> Result<(), Box<dyn Error>> {
                     e
                 })?;
 
-                match sqlx::query(&up_sql).execute(&mut *tx).await {
-                    Ok(_) => {
-                        match sqlx::query("INSERT INTO schema_migrations (version) VALUES ($1)")
-                            .bind(version)
-                            .execute(&mut *tx)
-                            .await
-                        {
-                            Ok(_) => {
-                                tx.commit().await.map_err(|e| {
-                                    println!("Failed to commit transaction: {e}");
-                                    e
-                                })?;
-                                println!("Migration {version} applied successfully");
-                            }
-                            Err(e) => {
-                                println!("Failed to record migration: {e}");
-                                tx.rollback().await.ok();
-                                return Err(e.into());
-                            }
+                // Разделяем SQL на отдельные команды
+                let commands: Vec<&str> = up_sql
+                    .split(';')
+                    .map(|s| s.trim())
+                    .filter(|s| !s.is_empty())
+                    .collect();
+
+                let mut success = true;
+                for command in commands {
+                    if command.is_empty() {
+                        continue;
+                    }
+
+                    println!("Executing command: {}", command);
+                    match sqlx::query(command).execute(&mut *tx).await {
+                        Ok(_) => {
+                            println!("✓ Command executed successfully");
+                        }
+                        Err(e) => {
+                            println!("✗ Failed to execute command: {}", e);
+                            success = false;
+                            break;
                         }
                     }
-                    Err(e) => {
-                        println!("Failed to execute migration: {e}");
-                        tx.rollback().await.ok();
-                        return Err(e.into());
+                }
+
+                if success {
+                    match sqlx::query(
+                        "INSERT INTO schema_migrations (version) VALUES ($1)",
+                    )
+                    .bind(version)
+                    .execute(&mut *tx)
+                    .await
+                    {
+                        Ok(_) => {
+                            tx.commit().await.map_err(|e| {
+                                println!("Failed to commit transaction: {e}");
+                                e
+                            })?;
+                            println!(
+                                "Migration {version} applied successfully"
+                            );
+                        }
+                        Err(e) => {
+                            println!("Failed to record migration: {e}");
+                            tx.rollback().await.ok();
+                            return Err(e.into());
+                        }
                     }
+                } else {
+                    println!("Some commands failed, rolling back migration");
+                    tx.rollback().await.ok();
+                    return Err(
+                        "Migration failed due to SQL command errors".into()
+                    );
                 }
             }
         }
