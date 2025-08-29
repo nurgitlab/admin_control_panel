@@ -1,6 +1,7 @@
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
+use time::OffsetDateTime;
 use validator::Validate;
 
 #[derive(Debug, FromRow, Serialize, Deserialize)]
@@ -8,7 +9,9 @@ pub struct User {
     pub id: i32,
     pub username: String,
     pub password: String,
-    // pub email: String,
+    pub email: String,
+    pub created_at: OffsetDateTime,
+    pub updated_at: OffsetDateTime,
 }
 
 #[derive(Debug, Deserialize, Validate, Display)]
@@ -23,8 +26,8 @@ pub struct CreateUser {
 
     #[validate(length(min = 8))]
     pub password: String,
-    // #[validate(email(message = "Email must be a valid email address"))]
-    // pub email: String,
+    #[validate(email(message = "Email must be a valid email address"))]
+    pub email: String,
 }
 
 #[derive(Debug, Deserialize, Validate, Display)]
@@ -39,8 +42,8 @@ pub struct UpdateUser {
 
     #[validate(length(min = 8))]
     pub password: String,
-    // #[validate(email(message = "Email must be a valid email address"))]
-    // pub email: String,
+    #[validate(email(message = "Email must be a valid email address"))]
+    pub email: String,
 }
 
 #[derive(Debug, Deserialize, Validate)]

@@ -49,7 +49,7 @@ pub async fn update_user(
     path.validate()?;
     user_data.validate().map_err(UserError::Validation)?;
 
-    // Обновление пользователя
+    // User update
     let updated_user =
         UserRepository::update(&pool, path.user_id, user_data.into_inner())
             .await?;
