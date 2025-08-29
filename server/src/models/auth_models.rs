@@ -3,8 +3,6 @@ use time::{Duration, OffsetDateTime};
 use uuid::Uuid;
 use validator::Validate;
 
-use crate::configs;
-
 #[derive(Debug, Serialize, Deserialize)]
 
 // JWT Claims structure

@@ -1,9 +1,8 @@
+use configs::config;
 use sqlx::postgres::PgPoolOptions;
 use std::error::Error;
 use std::fs;
 use std::path::Path;
-
-use crate::configs::config;
 
 #[tokio::main]
 pub async fn main() -> Result<(), Box<dyn Error>> {

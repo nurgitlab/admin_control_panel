@@ -5,7 +5,7 @@ use lettre::{
     transport::smtp::authentication::Credentials,
 };
 
-use crate::{configs, errors::email_errors::EmailError};
+use crate::errors::email_errors::EmailError;
 
 #[async_trait]
 pub trait EmailService: Send + Sync {

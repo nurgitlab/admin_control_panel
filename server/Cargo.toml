@@ -12,6 +12,8 @@ name = "main"
 path = "src/main.rs"
 
 [dependencies]
+configs = { path = "./configs" }
+
 actix-web = "4"
 actix-web-httpauth = "0.8.0"
 uuid = { version = "1.18.0", features = ["v4", "serde"] }
@@ -45,7 +47,6 @@ lettre = { version = "0.11", features = ["tokio1-native-tls", "builder"] }
 lettre_email = "0.9.4"
 mime = "0.3"
 
-configs = { path = "../configs" }
 
 [lints]
 clippy.all = "warn"

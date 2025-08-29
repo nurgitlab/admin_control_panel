@@ -3,4 +3,11 @@ name = "configs"
 version = "0.1.0"
 edition = "2024"
 
+[lib]
+name = "configs"
+path = "mod.rs"
+
 [dependencies]
+dotenv = "0.15"
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1.0.143" }

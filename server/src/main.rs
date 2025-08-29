@@ -1,7 +1,6 @@
 use std::sync::Arc;
 
 use crate::{
-    configs::config,
     handlers::ping_pong_handler::get_ping_pong,
     services::email_services::{EmailService, LettreEmailService},
 };
@@ -10,12 +9,12 @@ use actix_web::{
     middleware::Logger,
     web::{Data, scope},
 };
+use configs::config;
 use sqlx::postgres::PgPoolOptions;
 
 mod errors;
 mod handlers;
 mod middlewares;
-pub mod migrations;
 mod models;
 mod repositories;
 mod services;

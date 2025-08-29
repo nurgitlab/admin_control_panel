@@ -1,5 +1,4 @@
 use crate::{
-    configs,
     errors::auth_errors::AuthError,
     models::auth_models::{
         Claims, LoginRequest, RefreshRequest, RefreshToken, TokenPair,
