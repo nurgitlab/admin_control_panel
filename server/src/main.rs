@@ -18,6 +18,7 @@ mod middlewares;
 mod models;
 mod repositories;
 mod services;
+mod utils;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
