@@ -1,7 +1,11 @@
 use crate::{
     errors::temp_registration_errors::TempRegistrationError,
     models::temp_registration::CreateTempRegistration,
-    repositories::temp_registration_repository::TempRegistrationRepository,
+    repositories::{
+        temp_registration_repository::TempRegistrationRepository,
+        users_repository::UserRepository,
+    },
+    services::email_services::{EmailService, LettreEmailService},
     utils::secret_generator::SecretGenerator,
 };
 use sqlx::PgPool;
@@ -13,14 +17,23 @@ impl TempRegistrationService {
         pool: &PgPool,
         registration_data: CreateTempRegistration,
     ) -> Result<String, TempRegistrationError> {
-        let is_already_registering =
-            TempRegistrationRepository::is_email_in_registration(
-                pool,
-                &registration_data.email,
-            )
-            .await?;
+        let email = registration_data.email.clone();
 
-        if is_already_registering {
+        if UserRepository::is_email_taken(pool, &registration_data.email)
+            .await
+            .map_err(|e| {
+                log::error!("User repository error: {}", e);
+                TempRegistrationError::Internal
+            })?
+        {
+            return Err(TempRegistrationError::EmailAlreadyTaken);
+        }
+
+        let can_update =
+            TempRegistrationRepository::can_update_registration(pool, &email)
+                .await?;
+
+        if !can_update {
             return Err(TempRegistrationError::AlreadyInProgress);
         }
 
@@ -28,18 +41,17 @@ impl TempRegistrationService {
 
         TempRegistrationRepository::create(
             pool,
-            registration_data.clone(),
+            registration_data,
             secret_key.clone(),
         )
         .await?;
 
-        // Отправляем email с секретным ключом
-        Self::send_confirmation_email(&registration_data.email, &secret_key)
-            .await
-            .map_err(|e| {
+        Self::send_confirmation_email(&email, &secret_key).await.map_err(
+            |e| {
                 log::error!("Failed to send confirmation email: {}", e);
                 TempRegistrationError::Internal
-            })?;
+            },
+        )?;
 
         Ok(secret_key)
     }
@@ -48,13 +60,20 @@ impl TempRegistrationService {
         email: &str,
         secret_key: &str,
     ) -> Result<(), Box<dyn std::error::Error>> {
-        // Здесь вызывается ваш существующий сервис отправки email
-        // Например: email_service::send_confirmation(email, secret_key).await?;
+        let email_service = LettreEmailService::new()
+            .map_err(|e| format!("Failed to create email service: {}", e))?;
 
-        // Заглушка для демонстрации
-        println!("Sending confirmation email to: {}", email);
-        println!("Secret key: {}", secret_key);
+        EmailService::send_email(
+            &email_service,
+            email,
+            "Confirm registration",
+            &format!("Your secret code: {}", secret_key),
+            Some(&format!("<p>Your secret code: <b>{}</b></p>", secret_key)),
+        )
+        .await
+        .map_err(|e| Box::new(e) as Box<dyn std::error::Error>)?;
 
+        log::info!("Confirmation email sent to: {}", email);
         Ok(())
     }
 }

@@ -71,7 +71,8 @@ async fn main() -> std::io::Result<()> {
                     .configure(handlers::cookies_handler::cookie_routes)
                     .configure(handlers::posts_handler::posts_routes)
                     .configure(handlers::auth_handler::auth_routes)
-                    .configure(handlers::email_handlers::email_routes),
+                    .configure(handlers::email_handlers::email_routes)
+                    .configure(handlers::temp_registration_handler::temp_registration_routes),
             )
     })
     .bind((server_host, server_port))?

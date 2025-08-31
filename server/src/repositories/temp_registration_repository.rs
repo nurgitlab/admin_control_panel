@@ -20,14 +20,7 @@ impl TempRegistrationRepository {
             r#"
             INSERT INTO temp_registrations (email, password, secret_key, created_at, expires_at, confirmed)
             VALUES ($1, $2, $3, NOW(), $4, FALSE)
-            RETURNING 
-                id, 
-                email, 
-                password, 
-                secret_key, 
-                created_at, 
-                expires_at, 
-                confirmed
+            RETURNING id, email, password, secret_key, created_at, expires_at, confirmed
             "#,
             registration_data.email,
             registration_data.password,
@@ -115,6 +108,19 @@ impl TempRegistrationRepository {
         .map_err(TempRegistrationError::Database)?;
 
         Ok(result.rows_affected() > 0)
+    }
+
+    pub async fn can_update_registration(
+        pool: &PgPool,
+        email: &str,
+    ) -> Result<bool, TempRegistrationError> {
+        if let Some(existing) = Self::find_by_email(pool, email).await? {
+            let one_minute_ago =
+                OffsetDateTime::now_utc() - Duration::minutes(1);
+            Ok(existing.created_at <= one_minute_ago)
+        } else {
+            Ok(true) // Записи нет, можно создавать
+        }
     }
 
     pub async fn delete_by_email(

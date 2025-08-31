@@ -2,7 +2,6 @@ use actix_web::{HttpResponse, ResponseError};
 use serde_json::json;
 use sqlx::Error as SqlxError;
 use thiserror::Error;
-use validator::ValidationErrors;
 
 #[derive(Debug, Error)]
 pub enum TempRegistrationError {
@@ -14,6 +13,9 @@ pub enum TempRegistrationError {
 
     #[error("Temporary registration not found")]
     NotFound,
+
+    #[error("Email is already taken")]
+    EmailAlreadyTaken,
 
     #[error("Registration already in progress")]
     AlreadyInProgress,
@@ -44,6 +46,13 @@ impl ResponseError for TempRegistrationError {
                 HttpResponse::InternalServerError().json(json!({
                     "error": "database_error",
                     "message": "Database operation failed"
+                }))
+            }
+
+            TempRegistrationError::EmailAlreadyTaken => {
+                HttpResponse::NotFound().json(json!({
+                    "error": "email_already_taken",
+                    "message": "Email is already taken"
                 }))
             }
 
