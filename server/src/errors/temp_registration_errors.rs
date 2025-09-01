@@ -20,9 +20,8 @@ pub enum TempRegistrationError {
     #[error("Registration already in progress")]
     AlreadyInProgress,
 
-    #[error("Invalid secret key")]
-    InvalidSecretKey,
-
+    // #[error("Invalid secret key")]
+    // InvalidSecretKey,
     #[error("Registration expired")]
     Expired,
 
