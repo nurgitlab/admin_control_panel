@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
 
 import { useCounterMutation } from '@/entities/CounterEntity/api/hooks';
 import { useCounterStore } from '@/entities/CounterEntity/model/store';

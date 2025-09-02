@@ -69,13 +69,12 @@ impl ResponseError for TempRegistrationError {
                 "message": "Registration for this email is already in progress"
             })),
 
-            TempRegistrationError::InvalidSecretKey => {
-                HttpResponse::BadRequest().json(json!({
-                    "error": "invalid_secret_key",
-                    "message": "Invalid confirmation key"
-                }))
-            }
-
+            // TempRegistrationError::InvalidSecretKey => {
+            //     HttpResponse::BadRequest().json(json!({
+            //         "error": "invalid_secret_key",
+            //         "message": "Invalid confirmation key"
+            //     }))
+            // }
             TempRegistrationError::Expired => {
                 HttpResponse::BadRequest().json(json!({
                     "error": "expired",
