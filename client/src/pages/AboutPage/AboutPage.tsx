@@ -1,4 +1,6 @@
-export const AboutPage = () => {
+import { FC } from 'react';
+
+export const AboutPage: FC = () => {
   return (
     <div>
       <h1>About as</h1>
