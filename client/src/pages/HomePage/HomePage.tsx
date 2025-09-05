@@ -1,6 +1,8 @@
+import { FC } from 'react';
+
 import { Counter } from '@/features/Counter';
 
-export const HomePage = () => {
+export const HomePage: FC = () => {
   return (
     <div>
       <h1>Домашняя страница</h1>
