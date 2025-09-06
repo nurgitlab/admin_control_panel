@@ -52,7 +52,7 @@ export const Counter: FC = () => {
 
       {isError && (
         <div style={{ color: 'red', marginTop: '10px' }}>
-          Ошибка: {error.message}
+          Error: {error.message}
         </div>
       )}
 
